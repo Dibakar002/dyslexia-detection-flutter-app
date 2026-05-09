@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 import '../models/prediction_result.dart';
 import '../services/pdf_service.dart';
+import '../services/history_service.dart';
 
 class ResultScreen extends StatefulWidget {
   final PredictionResult result;
@@ -22,6 +23,26 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen> {
   bool _isSaving = false;
+  bool _historySaved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _saveToHistory();
+  }
+
+  Future<void> _saveToHistory() async {
+    if (_historySaved) return;
+    _historySaved = true;
+    final entry = HistoryEntry(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      label: widget.result.label,
+      confidence: widget.result.confidence,
+      imagePath: widget.imageFile.path,
+      timestamp: DateTime.now(),
+    );
+    await HistoryService.save(entry);
+  }
 
   bool get _isDyslexic => widget.result.label == 'Dyslexic';
 

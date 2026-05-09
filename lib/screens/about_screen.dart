@@ -41,7 +41,6 @@ class _AboutScreenState extends State<AboutScreen>
           SliverAppBar(
             pinned: true,
             expandedHeight: 200,
-            automaticallyImplyLeading: false,
             backgroundColor: const Color(0xFF1B3A5C),
             title: const Text(
               'About',
@@ -52,6 +51,7 @@ class _AboutScreenState extends State<AboutScreen>
               ),
             ),
             centerTitle: true,
+            iconTheme: const IconThemeData(color: Colors.white),
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
               background: Container(
