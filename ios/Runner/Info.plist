@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Dyslexia Detection App</string>
+	<string>Dyscript</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to upload handwriting images for dyslexia detection analysis.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera to capture handwriting images for dyslexia detection analysis.</string>
 </dict>
 </plist>

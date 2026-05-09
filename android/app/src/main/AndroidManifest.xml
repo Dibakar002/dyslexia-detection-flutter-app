@@ -11,7 +11,7 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     
     <application
-        android:label="dyslexia_detection_app"
+        android:label="Dyscript"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

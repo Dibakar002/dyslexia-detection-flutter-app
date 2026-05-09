@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:image/image.dart' as img;
 import '../services/api_service.dart';
 import 'result_screen.dart';
 import 'about_screen.dart';
@@ -310,26 +311,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            // Image preview
+            // Image preview and crop button
             if (_selectedImage != null) ...[
               const SizedBox(height: 12),
               Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child:
-                        kIsWeb
-                            ? Image.network(
-                              _selectedImage!.path,
-                              height: 80,
-                              fit: BoxFit.cover,
-                            )
-                            : Image.file(
-                              File(_selectedImage!.path),
-                              height: 80,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            ),
+                    child: Image.file(
+                      File(_selectedImage!.path),
+                      height: 120,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 120,
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   Positioned(
                     top: 4,
@@ -351,6 +355,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => _cropAndSet(_selectedImage!),
+                  icon: const Icon(Icons.crop, size: 18),
+                  label: const Text('Crop Image (Optional)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2C5F8D),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
             ],
           ],
@@ -485,7 +506,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _pickImageFromGallery() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) await _cropAndSet(image);
+      if (image != null) {
+        if (mounted) {
+          setState(() => _selectedImage = image);
+        }
+      }
     } catch (e) {
       _showError('Failed to select image: $e');
     }
@@ -498,35 +523,70 @@ class _HomeScreenState extends State<HomeScreen> {
         preferredCameraDevice: CameraDevice.rear,
         imageQuality: 90,
       );
-      if (image != null) await _cropAndSet(image);
+      if (image != null) {
+        if (mounted) {
+          setState(() => _selectedImage = image);
+        }
+      }
     } catch (e) {
       _showError('Failed to capture image: $e');
     }
   }
 
   Future<void> _cropAndSet(XFile image) async {
-    final cropped = await ImageCropper().cropImage(
-      sourcePath: image.path,
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Handwriting',
-          toolbarColor: const Color(0xFF1B3A5C),
-          toolbarWidgetColor: Colors.white,
-          activeControlsWidgetColor: const Color(0xFF2C5F8D),
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
-          hideBottomControls: false,
-        ),
-        IOSUiSettings(
-          title: 'Crop Handwriting',
-          cancelButtonTitle: 'Cancel',
-          doneButtonTitle: 'Done',
-        ),
-      ],
-    );
-    if (cropped != null) {
-      setState(() => _selectedImage = XFile(cropped.path));
+    try {
+      // Compress image before cropping to prevent crashes
+      final compressedFile = await _compressImage(image.path);
+
+      final cropped = await ImageCropper().cropImage(
+        sourcePath: compressedFile.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Handwriting',
+            toolbarColor: const Color(0xFF1B3A5C),
+            toolbarWidgetColor: Colors.white,
+            activeControlsWidgetColor: const Color(0xFF2C5F8D),
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+            hideBottomControls: false,
+          ),
+          IOSUiSettings(
+            title: 'Crop Handwriting',
+            cancelButtonTitle: 'Cancel',
+            doneButtonTitle: 'Done',
+          ),
+        ],
+      );
+      if (cropped != null && mounted) {
+        setState(() => _selectedImage = XFile(cropped.path));
+      }
+    } catch (e) {
+      if (mounted) {
+        _showError('Failed to crop image: $e');
+      }
     }
+  }
+
+  Future<File> _compressImage(String imagePath) async {
+    final originalFile = File(imagePath);
+    final bytes = await originalFile.readAsBytes();
+    final image = img.decodeImage(bytes);
+
+    if (image == null) throw Exception('Failed to decode image');
+
+    // Resize to max 1920x1920 to prevent memory issues
+    final resized = img.copyResize(
+      image,
+      width: image.width > 1920 ? 1920 : image.width,
+      height: image.height > 1920 ? 1920 : image.height,
+      interpolation: img.Interpolation.average,
+    );
+
+    // Save compressed version
+    final compressedBytes = img.encodeJpg(resized, quality: 85);
+    final tempFile = File('${originalFile.parent.path}/compressed_temp.jpg');
+    await tempFile.writeAsBytes(compressedBytes);
+    return tempFile;
   }
 
   Future<void> _predictDyslexia() async {
@@ -552,8 +612,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } catch (e) {
-      setState(() => _isLoading = false);
-      _showError('Prediction failed: $e');
+      if (mounted) {
+        setState(() => _isLoading = false);
+        _showError('Prediction failed: $e');
+      }
     }
   }
 
