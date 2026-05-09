@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/widgets/instruction_modal.dart';
+import 'package:dyscript/widgets/instruction_modal.dart';
 
 /// Widget tests for InstructionModal widget
 /// Validates Requirements 4.1, 4.2, 4.3

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/screens/home_screen.dart';
+import 'package:dyscript/screens/home_screen.dart';
 import 'package:image/image.dart' as img;
 
 void main() {

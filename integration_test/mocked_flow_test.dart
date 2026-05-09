@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:image/image.dart' as img;
-import 'package:dyslexia_detection_app/models/prediction_result.dart';
-import 'package:dyslexia_detection_app/models/validation_result.dart';
-import 'package:dyslexia_detection_app/utils/image_validator.dart';
-import 'package:dyslexia_detection_app/utils/image_processor.dart';
+import 'package:dyscript/models/prediction_result.dart';
+import 'package:dyscript/models/validation_result.dart';
+import 'package:dyscript/utils/image_validator.dart';
+import 'package:dyscript/utils/image_processor.dart';
 
 /// Integration tests with mocked components to test complete flows
 /// These tests verify the integration between components without

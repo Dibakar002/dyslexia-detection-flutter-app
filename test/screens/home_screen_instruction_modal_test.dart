@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/screens/home_screen.dart';
+import 'package:dyscript/screens/home_screen.dart';
 
 /// Widget tests for instruction modal flow in HomeScreen
 /// Validates Requirements 4.1, 4.2, 4.3, 4.5

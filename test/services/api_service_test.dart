@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
-import 'package:dyslexia_detection_app/services/api_service.dart';
-import 'package:dyslexia_detection_app/models/prediction_result.dart';
+import 'package:dyscript/services/api_service.dart';
+import 'package:dyscript/models/prediction_result.dart';
 
 import 'api_service_test.mocks.dart';
 

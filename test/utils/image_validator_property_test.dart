@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/utils/image_validator.dart';
-import 'package:dyslexia_detection_app/models/validation_result.dart';
+import 'package:dyscript/utils/image_validator.dart';
+import 'package:dyscript/models/validation_result.dart';
 import 'package:image/image.dart' as img;
 
 /// Property-based tests for ImageValidator

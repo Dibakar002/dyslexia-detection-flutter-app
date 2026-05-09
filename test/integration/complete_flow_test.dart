@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/models/prediction_result.dart';
-import 'package:dyslexia_detection_app/models/validation_result.dart';
+import 'package:dyscript/models/prediction_result.dart';
+import 'package:dyscript/models/validation_result.dart';
 
 /// Integration tests for complete flows
 /// These tests verify the integration between components

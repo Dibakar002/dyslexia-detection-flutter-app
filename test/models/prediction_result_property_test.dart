@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/models/prediction_result.dart';
+import 'package:dyscript/models/prediction_result.dart';
 
 void main() {
   group(

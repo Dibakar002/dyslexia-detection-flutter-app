@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/screens/home_screen.dart';
+import 'package:dyscript/screens/home_screen.dart';
 
 /// Tests for result display functionality in HomeScreen
 /// Validates Requirements 6.1, 6.2, 6.3, 6.4, 6.5, 6.6

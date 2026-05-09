@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/screens/home_screen.dart';
+import 'package:dyscript/screens/home_screen.dart';
 
 /// Comprehensive widget tests for HomeScreen
 /// Validates Requirements: 1.1, 1.2, 1.3, 4.1, 6.4, 6.5, 7.1, 9.5, 9.6

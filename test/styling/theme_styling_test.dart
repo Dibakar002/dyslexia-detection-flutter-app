@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/main.dart';
+import 'package:dyscript/main.dart';
 
 /// Widget tests for theme styling, color scheme, spacing, and padding
 ///

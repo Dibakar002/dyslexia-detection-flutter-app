@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/screens/home_screen.dart';
+import 'package:dyscript/screens/home_screen.dart';
 
 void main() {
   group('HomeScreen Image Selection', () {

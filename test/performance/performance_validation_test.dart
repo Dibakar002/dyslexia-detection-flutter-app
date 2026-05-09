@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dyslexia_detection_app/utils/image_processor.dart';
+import 'package:dyscript/utils/image_processor.dart';
 import 'package:image/image.dart' as img;
 
 /// Performance validation tests for dyslexia detection app

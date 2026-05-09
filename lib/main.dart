@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:dyslexia_detection_app/screens/home_screen.dart';
+import 'package:dyscript/screens/home_screen.dart';
 
 void main() {
   runApp(const DyslexiaDetectionApp());
