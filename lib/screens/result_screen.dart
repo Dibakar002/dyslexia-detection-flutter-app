@@ -129,10 +129,6 @@ class _ResultScreenState extends State<ResultScreen> {
             _buildUploadedImageCard(theme),
             const SizedBox(height: 16),
 
-            // ── Analysis Summary ─────────────────────────────────
-            _buildAnalysisSummaryCard(theme),
-            const SizedBox(height: 16),
-
             // ── What does this mean? ─────────────────────────────
             _buildInfoCard(theme),
             const SizedBox(height: 16),
@@ -326,134 +322,6 @@ class _ResultScreenState extends State<ResultScreen> {
     );
   }
 
-  Widget _buildAnalysisSummaryCard(ThemeData theme) {
-    // Generate plausible metrics based on the result
-    final metrics = _buildMetrics();
-
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.trending_up,
-                  color: Color(0xFF2C5F8D),
-                  size: 22,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Analysis Summary',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1B3A5C),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ...metrics.map((m) => _buildMetricRow(theme, m)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  List<_Metric> _buildMetrics() {
-    final base = widget.result.confidence;
-    if (_isDyslexic) {
-      return [
-        _Metric('Letter Recognition', Icons.text_fields, 1 - base * 0.6, 'Poor'),
-        _Metric('Spacing Consistency', Icons.space_bar, 1 - base * 0.5, 'Fair'),
-        _Metric('Baseline Alignment', Icons.horizontal_rule, 1 - base * 0.7, 'Poor'),
-        _Metric('Letter Formation', Icons.edit_outlined, 1 - base * 0.55, 'Fair'),
-        _Metric('Pressure Consistency', Icons.show_chart, 1 - base * 0.4, 'Fair'),
-      ];
-    } else {
-      return [
-        _Metric('Letter Recognition', Icons.text_fields, base, 'Excellent'),
-        _Metric('Spacing Consistency', Icons.space_bar, base * 0.98, 'Excellent'),
-        _Metric('Baseline Alignment', Icons.horizontal_rule, base, 'Excellent'),
-        _Metric('Letter Formation', Icons.edit_outlined, base, 'Excellent'),
-        _Metric('Pressure Consistency', Icons.show_chart, base * 0.99, 'Excellent'),
-      ];
-    }
-  }
-
-  Widget _buildMetricRow(ThemeData theme, _Metric metric) {
-    final isGood = metric.score >= 0.7;
-    final barColor = isGood ? const Color(0xFF2E7D32) : const Color(0xFFD32F2F);
-    final labelColor = isGood ? const Color(0xFF2E7D32) : const Color(0xFFD32F2F);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0F4F8),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(metric.icon, size: 18, color: const Color(0xFF2C5F8D)),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  metric.label,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF1B3A5C),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              Text(
-                metric.rating,
-                style: TextStyle(
-                  color: labelColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              const SizedBox(width: 42),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: metric.score.clamp(0.0, 1.0),
-                    minHeight: 6,
-                    backgroundColor: Colors.grey[200],
-                    valueColor: AlwaysStoppedAnimation<Color>(barColor),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '${(metric.score * 100).toStringAsFixed(0)}%',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildInfoCard(ThemeData theme) {
     return Card(
       elevation: 2,
@@ -561,15 +429,6 @@ class _ResultScreenState extends State<ResultScreen> {
       ),
     );
   }
-}
-
-class _Metric {
-  final String label;
-  final IconData icon;
-  final double score;
-  final String rating;
-
-  const _Metric(this.label, this.icon, this.score, this.rating);
 }
 
 class _Suggestion {

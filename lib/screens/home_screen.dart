@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import '../services/api_service.dart';
 import 'result_screen.dart';
 import 'about_screen.dart';
@@ -484,11 +485,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _pickImageFromGallery() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        setState(() {
-          _selectedImage = image;
-        });
-      }
+      if (image != null) await _cropAndSet(image);
     } catch (e) {
       _showError('Failed to select image: $e');
     }
@@ -501,13 +498,34 @@ class _HomeScreenState extends State<HomeScreen> {
         preferredCameraDevice: CameraDevice.rear,
         imageQuality: 90,
       );
-      if (image != null) {
-        setState(() {
-          _selectedImage = image;
-        });
-      }
+      if (image != null) await _cropAndSet(image);
     } catch (e) {
       _showError('Failed to capture image: $e');
+    }
+  }
+
+  Future<void> _cropAndSet(XFile image) async {
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: image.path,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Handwriting',
+          toolbarColor: const Color(0xFF1B3A5C),
+          toolbarWidgetColor: Colors.white,
+          activeControlsWidgetColor: const Color(0xFF2C5F8D),
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+          hideBottomControls: false,
+        ),
+        IOSUiSettings(
+          title: 'Crop Handwriting',
+          cancelButtonTitle: 'Cancel',
+          doneButtonTitle: 'Done',
+        ),
+      ],
+    );
+    if (cropped != null) {
+      setState(() => _selectedImage = XFile(cropped.path));
     }
   }
 
