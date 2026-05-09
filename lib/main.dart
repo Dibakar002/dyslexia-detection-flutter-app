@@ -81,7 +81,7 @@ class DyslexiaDetectionApp extends StatelessWidget {
       ),
 
       // Card theme with elevation and rounded corners
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 4,
         shadowColor: Colors.black.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(

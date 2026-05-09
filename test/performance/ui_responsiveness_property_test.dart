@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dyslexia_detection_app/utils/image_processor.dart';
 import 'package:image/image.dart' as img;
