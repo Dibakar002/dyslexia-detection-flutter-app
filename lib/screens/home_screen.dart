@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image/image.dart' as img;
 import '../services/api_service.dart';
 import 'result_screen.dart';
 import 'about_screen.dart';
@@ -45,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
             title: Text(
-              'Dyslexia Detection',
+              'Dyscript',
               style: theme.textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -136,24 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildTipsCard(theme),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
-                  onPressed: _pickImageFromGallery,
-                  icon: const Icon(Icons.upload, size: 20),
-                  label: const Text('Upload Image'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1B3A5C),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
                   onPressed:
                       _selectedImage == null || _isLoading
                           ? null
@@ -167,10 +147,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                           : const Icon(Icons.psychology, size: 20),
                   label: Text(_isLoading ? 'Predicting...' : 'Predict'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF2C5F8D),
-                    side: const BorderSide(color: Color(0xFF2C5F8D)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _selectedImage == null
+                        ? Colors.grey[300]
+                        : const Color(0xFF2C5F8D),
+                    foregroundColor: _selectedImage == null
+                        ? Colors.grey[600]
+                        : Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    elevation: _selectedImage == null ? 0 : 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -311,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            // Image preview and crop button
+            // Image preview
             if (_selectedImage != null) ...[
               const SizedBox(height: 12),
               Stack(
@@ -339,7 +324,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     top: 4,
                     right: 4,
                     child: GestureDetector(
-                      onTap: () => setState(() => _selectedImage = null),
+                      onTap: () => setState(() {
+                        _selectedImage = null;
+                      }),
                       child: Container(
                         decoration: const BoxDecoration(
                           color: Colors.black54,
@@ -355,23 +342,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => _cropAndSet(_selectedImage!),
-                  icon: const Icon(Icons.crop, size: 18),
-                  label: const Text('Crop Image (Optional)'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2C5F8D),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
               ),
             ],
           ],
@@ -506,10 +476,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _pickImageFromGallery() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        if (mounted) {
-          setState(() => _selectedImage = image);
-        }
+      if (image != null && mounted) {
+        setState(() => _selectedImage = image);
       }
     } catch (e) {
       _showError('Failed to select image: $e');
@@ -523,71 +491,14 @@ class _HomeScreenState extends State<HomeScreen> {
         preferredCameraDevice: CameraDevice.rear,
         imageQuality: 90,
       );
-      if (image != null) {
-        if (mounted) {
-          setState(() => _selectedImage = image);
-        }
+      if (image != null && mounted) {
+        setState(() => _selectedImage = image);
       }
     } catch (e) {
       _showError('Failed to capture image: $e');
     }
   }
 
-  Future<void> _cropAndSet(XFile image) async {
-    try {
-      // Compress image before cropping to prevent crashes
-      final compressedFile = await _compressImage(image.path);
-
-      final cropped = await ImageCropper().cropImage(
-        sourcePath: compressedFile.path,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop Handwriting',
-            toolbarColor: const Color(0xFF1B3A5C),
-            toolbarWidgetColor: Colors.white,
-            activeControlsWidgetColor: const Color(0xFF2C5F8D),
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-            hideBottomControls: false,
-          ),
-          IOSUiSettings(
-            title: 'Crop Handwriting',
-            cancelButtonTitle: 'Cancel',
-            doneButtonTitle: 'Done',
-          ),
-        ],
-      );
-      if (cropped != null && mounted) {
-        setState(() => _selectedImage = XFile(cropped.path));
-      }
-    } catch (e) {
-      if (mounted) {
-        _showError('Failed to crop image: $e');
-      }
-    }
-  }
-
-  Future<File> _compressImage(String imagePath) async {
-    final originalFile = File(imagePath);
-    final bytes = await originalFile.readAsBytes();
-    final image = img.decodeImage(bytes);
-
-    if (image == null) throw Exception('Failed to decode image');
-
-    // Resize to max 1920x1920 to prevent memory issues
-    final resized = img.copyResize(
-      image,
-      width: image.width > 1920 ? 1920 : image.width,
-      height: image.height > 1920 ? 1920 : image.height,
-      interpolation: img.Interpolation.average,
-    );
-
-    // Save compressed version
-    final compressedBytes = img.encodeJpg(resized, quality: 85);
-    final tempFile = File('${originalFile.parent.path}/compressed_temp.jpg');
-    await tempFile.writeAsBytes(compressedBytes);
-    return tempFile;
-  }
 
   Future<void> _predictDyslexia() async {
     if (_selectedImage == null) return;
